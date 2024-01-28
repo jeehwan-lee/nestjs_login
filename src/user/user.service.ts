@@ -34,6 +34,32 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
+  async increaseUserFailCount(email: string) {
+    const user = await this.getUser(email);
+
+    if (!user) {
+      return null;
+    }
+
+    user.failCount = user.failCount + 1;
+    user.updatedDate = new Date();
+    this.userRepository.save(user);
+
+    return user.failCount;
+  }
+
+  async inActiveUser(email: string) {
+    const user = await this.getUser(email);
+
+    if (!user) {
+      return null;
+    }
+
+    user.status = 'inactive';
+    user.updatedDate = new Date();
+    this.userRepository.save(user);
+  }
+
   async validateUser(email: string, password: string) {
     const existedUser = await this.getUser(email);
 

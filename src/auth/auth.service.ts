@@ -84,11 +84,27 @@ export class AuthService {
     const validatedUser = await this.userService.validateUser(email, password);
 
     if (!validatedUser) {
+      // 계정 fail Count ++
+      const failCount = await this.userService.increaseUserFailCount(email);
+
+      // fail Count > 5 이면 계정 잠금
+      if (failCount > 5) {
+        await this.userService.inActiveUser(email);
+      }
       throw new HttpException(
         '이메일과 비밀번호를 확인하세요.',
         HttpStatus.BAD_REQUEST,
       );
     }
+
+    // 계정이 잠겼는지 확인
+    if (validatedUser.status == 'inactive') {
+      throw new HttpException('계정이 잠겨있습니다.', HttpStatus.BAD_REQUEST);
+    }
+
+    // 중복로그인 확인
+
+    // fail Acount 0으로 초기화
 
     const accessToken = await this.tokenService.signAccessToken(email);
     const refreshToken = await this.tokenService.signRefreshToken(email);
