@@ -111,9 +111,8 @@ export class AuthService {
     }
 
     // 중복로그인 확인
-    const userExistedRefreshToken = await this.tokenService.getRefreshToken(
-      validatedUser.email,
-    );
+    const userExistedRefreshToken =
+      await this.tokenService.getRefreshTokenByEmail(validatedUser.email);
 
     if (userExistedRefreshToken) {
       throw new HttpException(
@@ -137,6 +136,7 @@ export class AuthService {
       deletedDate: undefined,
     });
 
+    // TODO : 반환값 수정
     return {
       accessToken: accessToken,
       refreshToken: refreshToken,
@@ -145,8 +145,9 @@ export class AuthService {
 
   async logout(email: string) {
     const userExistedRefreshToken =
-      await this.tokenService.getRefreshToken(email);
+      await this.tokenService.getRefreshTokenByEmail(email);
 
+    // token DB에 저장되어 있지 않는 사용자의 토큰일 경우
     if (!userExistedRefreshToken) {
       throw new HttpException(
         '로그인되어 있지 않은 사용자입니다.',
@@ -155,5 +156,25 @@ export class AuthService {
     }
 
     await this.tokenService.delelteRefreshToken(email);
+  }
+
+  async createAccessToken(email: string, refreshToken: string) {
+    const existedToken =
+      await this.tokenService.getRefreshTokenByToken(refreshToken);
+
+    if (!existedToken) {
+      throw new HttpException(
+        '유효한 토큰이 아닙니다.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const verifyResult =
+      await this.tokenService.verifyRefreshToken(refreshToken);
+
+    if (verifyResult) {
+      const newAccessToken = await this.tokenService.signAccessToken(email);
+      return { accessToken: newAccessToken, refreshToken: refreshToken };
+    }
   }
 }

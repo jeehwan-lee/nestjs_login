@@ -34,4 +34,12 @@ export class AuthController {
     // TODO : admin으로 인증하는방법 다시
     return await this.authService.findAllUser(email);
   }
+
+  @Post('token')
+  async createAccessToken(@Request() req) {
+    return await this.authService.createAccessToken(
+      req.body.email,
+      req.body.refreshToken,
+    );
+  }
 }
