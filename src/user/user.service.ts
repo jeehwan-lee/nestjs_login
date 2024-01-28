@@ -10,10 +10,6 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  createUser(user): Promise<User> {
-    return this.userRepository.save(user);
-  }
-
   async getUser(email: string) {
     const result = await this.userRepository.findOne({
       where: { email },
@@ -22,10 +18,19 @@ export class UserService {
     return result;
   }
 
+  createUser(user): Promise<User> {
+    return this.userRepository.save(user);
+  }
+
+  async updateUserPassword(user, password: string): Promise<User> {
+    user.password = password;
+    user.updatedDate = new Date();
+
+    return this.userRepository.save(user);
+  }
+
   async validateUser(email: string, password: string) {
-    const existedUser = await this.userRepository.findOne({
-      where: { email },
-    });
+    const existedUser = await this.getUser(email);
 
     if (!existedUser) {
       return null;
