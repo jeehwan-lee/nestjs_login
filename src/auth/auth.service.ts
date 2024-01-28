@@ -109,6 +109,16 @@ export class AuthService {
     }
 
     // 중복로그인 확인
+    const userExistedRefreshToken = await this.tokenService.getRefreshToken(
+      validatedUser.email,
+    );
+
+    if (userExistedRefreshToken) {
+      throw new HttpException(
+        '이미 로그인 되어있는 사용자입니다.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     // User의 fail Acount 0으로 초기화
     await this.userService.resetUserFailCount(email);

@@ -10,16 +10,16 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
+  async getAllUser() {
+    const result = await this.userRepository.find();
+    return result;
+  }
+
   async getUser(email: string) {
     const result = await this.userRepository.findOne({
       where: { email },
     });
 
-    return result;
-  }
-
-  async getAllUser() {
-    const result = await this.userRepository.find();
     return result;
   }
 

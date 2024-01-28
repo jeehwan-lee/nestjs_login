@@ -12,6 +12,14 @@ export class TokenService {
     private readonly jwtService: JwtService,
   ) {}
 
+  async getRefreshToken(email: string) {
+    const result = await this.tokenRepository.findOne({
+      where: { email },
+    });
+
+    return result;
+  }
+
   createRefreshToken(token: Token): Promise<Token> {
     return this.tokenRepository.save(token);
   }
