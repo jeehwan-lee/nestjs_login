@@ -25,7 +25,7 @@ export class AuthController {
   }
 
   @Get('user')
-  async findAllUser() {
-    return await this.authService.findAllUser();
+  async findAllUser(@Request() req) {
+    return await this.authService.findAllUser(req.body.email);
   }
 }
