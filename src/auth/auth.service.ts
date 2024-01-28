@@ -12,6 +12,7 @@ export class AuthService {
   ) {}
 
   async findAllUser() {
+    // TODO : admin 권한 인증 추가
     const existedAllUser = await this.userService.getAllUser();
     return existedAllUser;
   }

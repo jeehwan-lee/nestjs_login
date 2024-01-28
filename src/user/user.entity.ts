@@ -26,4 +26,7 @@ export class User {
 
   @Column({ default: 0 })
   failCount: number;
+
+  @Column({ default: 'normal' })
+  role: string;
 }
