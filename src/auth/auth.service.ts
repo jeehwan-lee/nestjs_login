@@ -105,6 +105,7 @@ export class AuthService {
     // 중복로그인 확인
 
     // fail Acount 0으로 초기화
+    await this.userService.resetUserFailCount(email);
 
     const accessToken = await this.tokenService.signAccessToken(email);
     const refreshToken = await this.tokenService.signRefreshToken(email);

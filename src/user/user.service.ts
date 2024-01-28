@@ -48,6 +48,20 @@ export class UserService {
     return user.failCount;
   }
 
+  async resetUserFailCount(email: string) {
+    const user = await this.getUser(email);
+
+    if (!user) {
+      return null;
+    }
+
+    user.failCount = 0;
+    user.updatedDate = new Date();
+    this.userRepository.save(user);
+
+    return user.failCount;
+  }
+
   async inActiveUser(email: string) {
     const user = await this.getUser(email);
 
