@@ -30,4 +30,18 @@ export class AuthService {
       throw new HttpException('Internal Server Error', 500);
     }
   }
+
+  async validateUser(email: string, password: string) {
+    const existedUser = await this.userService.getUser(email);
+
+    if (!existedUser) {
+      return null;
+    }
+    const { password: hasedPassword, ...userInfo } = existedUser;
+
+    if (bcrypt.compareSync(password, hasedPassword)) {
+      return userInfo;
+    }
+    return null;
+  }
 }
