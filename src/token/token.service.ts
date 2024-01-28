@@ -49,18 +49,22 @@ export class TokenService {
 
   signAccessToken(userEmail: string): string {
     //TODO : secret token 값 env 로 저장
-    return jwt.sign({ id: userEmail }, 'accessToken', { expiresIn: '1h' });
+    return jwt.sign({ id: userEmail }, process.env.ACCESS_TOKEN_SCRET, {
+      expiresIn: '1h',
+    });
   }
 
   signRefreshToken(userEmail: string): string {
-    return jwt.sign({ id: userEmail }, 'refreshToken', { expiresIn: '24h' });
+    return jwt.sign({ id: userEmail }, process.env.REFRESH_TOKEN_SCRET, {
+      expiresIn: '24h',
+    });
   }
 
   verifyAcessToken(token: string) {
-    return jwt.verify(token, 'accessToken');
+    return jwt.verify(token, process.env.ACCESS_TOKEN_SCRET);
   }
 
   verifyRefreshToken(token: string) {
-    return jwt.verify(token, 'refreshToken');
+    return jwt.verify(token, process.env.REFRESH_TOKEN_SCRET);
   }
 }

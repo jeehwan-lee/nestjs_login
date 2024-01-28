@@ -7,9 +7,11 @@ import { User } from './user/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { TokenModule } from './token/token.module';
 import { Token } from './token/token.entity';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'nest-login',
