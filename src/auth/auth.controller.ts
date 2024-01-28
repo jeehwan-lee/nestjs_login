@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Request } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { User } from 'src/user/user.entity';
 
@@ -22,5 +22,10 @@ export class AuthController {
       req.body.email,
       req.body.password,
     );
+  }
+
+  @Get('user')
+  async findAllUser() {
+    return await this.authService.findAllUser();
   }
 }

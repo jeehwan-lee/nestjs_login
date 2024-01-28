@@ -18,11 +18,16 @@ export class UserService {
     return result;
   }
 
+  async getAllUser() {
+    const result = await this.userRepository.find();
+    return result;
+  }
+
   createUser(user): Promise<User> {
     return this.userRepository.save(user);
   }
 
-  async updateUserPassword(user, password: string): Promise<User> {
+  updateUserPassword(user, password: string): Promise<User> {
     user.password = password;
     user.updatedDate = new Date();
 

@@ -11,28 +11,9 @@ export class AuthService {
     private tokenService: TokenService,
   ) {}
 
-  async changePassword(email: string, password: string) {
-    const existedUser = await this.userService.getUser(email);
-
-    if (!existedUser) {
-      throw new HttpException(
-        '이메일이 존재하지 않습니다.',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    const encryptedPassword = bcrypt.hashSync(password, 10);
-
-    try {
-      const newUser = await this.userService.updateUserPassword(
-        existedUser,
-        encryptedPassword,
-      );
-      newUser.password = undefined;
-      return newUser;
-    } catch (error) {
-      throw new HttpException('Internal Server Error', 500);
-    }
+  async findAllUser() {
+    const existedAllUser = await this.userService.getAllUser();
+    return existedAllUser;
   }
 
   async register(user: User) {
@@ -52,6 +33,31 @@ export class AuthService {
         ...user,
         password: encryptedPassword,
       });
+      newUser.password = undefined;
+      return newUser;
+    } catch (error) {
+      throw new HttpException('Internal Server Error', 500);
+    }
+  }
+
+  async changePassword(email: string, password: string) {
+    // TODO : token 인증 추가
+    const existedUser = await this.userService.getUser(email);
+
+    if (!existedUser) {
+      throw new HttpException(
+        '이메일이 존재하지 않습니다.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const encryptedPassword = bcrypt.hashSync(password, 10);
+
+    try {
+      const newUser = await this.userService.updateUserPassword(
+        existedUser,
+        encryptedPassword,
+      );
       newUser.password = undefined;
       return newUser;
     } catch (error) {
