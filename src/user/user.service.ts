@@ -12,4 +12,12 @@ export class UserService {
   createUser(user): Promise<User> {
     return this.userRepository.save(user);
   }
+
+  async getUser(email: string) {
+    const result = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    return result;
+  }
 }
