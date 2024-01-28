@@ -173,6 +173,7 @@ export class AuthService {
       await this.tokenService.verifyRefreshToken(refreshToken);
 
     if (verifyResult) {
+      // TODO : refreshToken도 수정해서 저장
       const newAccessToken = await this.tokenService.signAccessToken(email);
       return { accessToken: newAccessToken, refreshToken: refreshToken };
     }
