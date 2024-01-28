@@ -24,6 +24,10 @@ export class TokenService {
     return this.tokenRepository.save(token);
   }
 
+  async delelteRefreshToken(email: string) {
+    await this.tokenRepository.softDelete({ email: email });
+  }
+
   signAccessToken(userEmail: string): string {
     return jwt.sign({ id: userEmail }, 'accessToken', { expiresIn: '1h' });
   }

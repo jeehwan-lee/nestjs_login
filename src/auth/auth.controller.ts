@@ -16,6 +16,11 @@ export class AuthController {
     return await this.authService.login(req.body.email, req.body.password);
   }
 
+  @Post('logout')
+  async logout(@Request() req) {
+    return await this.authService.logout(req.body.email);
+  }
+
   @Post('changePw')
   async changePassword(@Request() req) {
     return await this.authService.changePassword(

@@ -84,6 +84,8 @@ export class AuthService {
     const validatedUser = await this.userService.validateUser(email, password);
 
     if (!validatedUser) {
+      // 비밀번호 검증에 실패했을 경우
+
       // User의 fail Count 데이터 증가
       const failCount = await this.userService.increaseUserFailCount(email);
 
@@ -130,11 +132,28 @@ export class AuthService {
     await this.tokenService.createRefreshToken({
       email: email,
       refreshToken: refreshToken,
+      createDate: undefined,
+      updatedDate: undefined,
+      deletedDate: undefined,
     });
 
     return {
       accessToken: accessToken,
       refreshToken: refreshToken,
     };
+  }
+
+  async logout(email: string) {
+    const userExistedRefreshToken =
+      await this.tokenService.getRefreshToken(email);
+
+    if (!userExistedRefreshToken) {
+      throw new HttpException(
+        '로그인되어 있지 않은 사용자입니다.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    await this.tokenService.delelteRefreshToken(email);
   }
 }
