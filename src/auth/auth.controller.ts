@@ -12,12 +12,8 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Request() req, @Response() res) {
-    const userInfo = await this.authService.validateUser(
-      req.body.email,
-      req.body.password,
-    );
-
-    return res.send({ message: 'login sucess' });
+  async login(@Request() req) {
+    console.log(req.body.email);
+    return await this.authService.login(req.body.email, req.body.password);
   }
 }

@@ -12,6 +12,10 @@ export class TokenService {
     private readonly jwtService: JwtService,
   ) {}
 
+  createRefreshToken(token: Token): Promise<Token> {
+    return this.tokenRepository.save(token);
+  }
+
   signAccessToken(userEmail: string): string {
     return jwt.sign({ id: userEmail }, 'accessToken', { expiresIn: '1h' });
   }

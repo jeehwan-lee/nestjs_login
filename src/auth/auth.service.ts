@@ -2,10 +2,14 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { User } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
+import { TokenService } from 'src/token/token.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private tokenService: TokenService,
+  ) {}
 
   async register(user: User) {
     const existedUser = await this.userService.getUser(user.email);
@@ -31,17 +35,27 @@ export class AuthService {
     }
   }
 
-  async validateUser(email: string, password: string) {
-    const existedUser = await this.userService.getUser(email);
+  async login(email: string, password: string) {
+    const validatedUser = await this.userService.validateUser(email, password);
 
-    if (!existedUser) {
-      return null;
+    if (!validatedUser) {
+      throw new HttpException(
+        '이메일과 비밀번호를 확인하세요.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    const { password: hasedPassword, ...userInfo } = existedUser;
 
-    if (bcrypt.compareSync(password, hasedPassword)) {
-      return userInfo;
-    }
-    return null;
+    const accessToken = await this.tokenService.signAccessToken(email);
+    const refreshToken = await this.tokenService.signRefreshToken(email);
+
+    await this.tokenService.createRefreshToken({
+      email: email,
+      refreshToken: refreshToken,
+    });
+
+    return {
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    };
   }
 }
