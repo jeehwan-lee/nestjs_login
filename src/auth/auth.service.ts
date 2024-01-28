@@ -172,9 +172,15 @@ export class AuthService {
     const verifyResult =
       await this.tokenService.verifyRefreshToken(refreshToken);
 
+    // TODO : token verify 실패한 경우
     if (verifyResult) {
-      // TODO : refreshToken도 수정해서 저장
-      const newAccessToken = await this.tokenService.signAccessToken(email);
+      // refreshToken 유효기간 갱신
+      const newAccessToken = this.tokenService.signAccessToken(email);
+      const newRefreshToken = this.tokenService.signRefreshToken(email);
+
+      // 현재 로그인한 사용자의 refresh Token을 DB에 저장
+      await this.tokenService.updateRefreshToken(email, newRefreshToken);
+
       return { accessToken: newAccessToken, refreshToken: refreshToken };
     }
   }

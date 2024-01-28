@@ -32,11 +32,23 @@ export class TokenService {
     return this.tokenRepository.save(token);
   }
 
+  async updateRefreshToken(email: string, refreshToken: string) {
+    const existedRefreshToken = await this.tokenRepository.findOne({
+      where: { email },
+    });
+
+    existedRefreshToken.refreshToken = refreshToken;
+    existedRefreshToken.updatedDate = new Date();
+
+    return this.tokenRepository.save(existedRefreshToken);
+  }
+
   async delelteRefreshToken(email: string) {
     await this.tokenRepository.softDelete({ email: email });
   }
 
   signAccessToken(userEmail: string): string {
+    //TODO : secret token 값 env 로 저장
     return jwt.sign({ id: userEmail }, 'accessToken', { expiresIn: '1h' });
   }
 
