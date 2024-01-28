@@ -17,7 +17,7 @@ export class User {
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   updatedDate: Date = new Date();
 
-  @Column()
+  @Column({ default: 'active' })
   status: string;
 
   @Column({ default: 0 })
