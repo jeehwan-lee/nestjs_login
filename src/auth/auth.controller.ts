@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Request } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { User } from 'src/user/user.entity';
 
@@ -25,7 +25,8 @@ export class AuthController {
   }
 
   @Get('user')
-  async findAllUser(@Request() req) {
-    return await this.authService.findAllUser(req.body.email);
+  async findAllUser(@Query('email') email: string) {
+    // TODO : admin으로 인증하는방법 다시
+    return await this.authService.findAllUser(email);
   }
 }
