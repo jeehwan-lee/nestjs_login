@@ -56,7 +56,19 @@ export class AuthService {
   }
 
   async changePassword(email: string, password: string) {
-    // TODO : token 인증 추가
+    // TOKEN 인증을 통해 현재 접속한 사용자인지 검증
+    const userExistedRefreshToken =
+      await this.tokenService.getRefreshTokenByEmail(email);
+
+    if (!userExistedRefreshToken) {
+      throw new HttpException('로그인이 필요합니다.', HttpStatus.BAD_REQUEST);
+    }
+
+    // 유효한 토큰인지 검증
+    await this.tokenService.verifyRefreshToken(
+      userExistedRefreshToken.refreshToken,
+    );
+
     const existedUser = await this.userService.getUser(email);
 
     if (!existedUser) {
@@ -169,19 +181,16 @@ export class AuthService {
       );
     }
 
-    const verifyResult =
-      await this.tokenService.verifyRefreshToken(refreshToken);
+    // 유효한 토큰인지 검증
+    await this.tokenService.verifyRefreshToken(refreshToken);
 
-    // TODO : token verify 실패한 경우
-    if (verifyResult) {
-      // refreshToken 유효기간 갱신
-      const newAccessToken = this.tokenService.signAccessToken(email);
-      const newRefreshToken = this.tokenService.signRefreshToken(email);
+    // refreshToken 유효기간 갱신
+    const newAccessToken = this.tokenService.signAccessToken(email);
+    const newRefreshToken = this.tokenService.signRefreshToken(email);
 
-      // 현재 로그인한 사용자의 refresh Token을 DB에 저장
-      await this.tokenService.updateRefreshToken(email, newRefreshToken);
+    // 현재 로그인한 사용자의 refresh Token을 DB에 저장
+    await this.tokenService.updateRefreshToken(email, newRefreshToken);
 
-      return { accessToken: newAccessToken, refreshToken: refreshToken };
-    }
+    return { accessToken: newAccessToken, refreshToken: refreshToken };
   }
 }

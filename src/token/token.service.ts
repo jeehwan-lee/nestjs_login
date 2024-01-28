@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Token } from './token.entity';
 import { Repository } from 'typeorm';
@@ -48,7 +48,6 @@ export class TokenService {
   }
 
   signAccessToken(userEmail: string): string {
-    //TODO : secret token 값 env 로 저장
     return jwt.sign({ id: userEmail }, process.env.ACCESS_TOKEN_SCRET, {
       expiresIn: '1h',
     });
@@ -61,10 +60,24 @@ export class TokenService {
   }
 
   verifyAcessToken(token: string) {
-    return jwt.verify(token, process.env.ACCESS_TOKEN_SCRET);
+    try {
+      return jwt.verify(token, process.env.ACCESS_TOKEN_SCRET);
+    } catch {
+      throw new HttpException(
+        '유효한 토큰이 아닙니다.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   verifyRefreshToken(token: string) {
-    return jwt.verify(token, process.env.REFRESH_TOKEN_SCRET);
+    try {
+      return jwt.verify(token, process.env.REFRESH_TOKEN_SCRET);
+    } catch {
+      throw new HttpException(
+        '유효한 토큰이 아닙니다.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }

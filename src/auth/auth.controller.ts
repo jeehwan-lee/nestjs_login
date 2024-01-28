@@ -31,7 +31,7 @@ export class AuthController {
 
   @Get('user')
   async findAllUser(@Query('email') email: string) {
-    // TODO : admin으로 인증하는방법 다시
+    // TODO : admin으로 인증하는방법 다시 (Guard?)
     return await this.authService.findAllUser(email);
   }
 
