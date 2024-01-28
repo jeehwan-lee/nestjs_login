@@ -84,15 +84,21 @@ export class AuthService {
     const validatedUser = await this.userService.validateUser(email, password);
 
     if (!validatedUser) {
-      // 계정 fail Count ++
+      // User의 fail Count 데이터 증가
       const failCount = await this.userService.increaseUserFailCount(email);
 
       // fail Count > 5 이면 계정 잠금
       if (failCount > 5) {
         await this.userService.inActiveUser(email);
+
+        throw new HttpException(
+          '로그인 시도 횟수 5회 초과로 계정이 잠겼습니다.',
+          HttpStatus.BAD_REQUEST,
+        );
       }
+
       throw new HttpException(
-        '이메일과 비밀번호를 확인하세요.',
+        `이메일과 비밀번호를 확인하세요. (로그인 실패 횟수 : ${failCount})`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -104,12 +110,13 @@ export class AuthService {
 
     // 중복로그인 확인
 
-    // fail Acount 0으로 초기화
+    // User의 fail Acount 0으로 초기화
     await this.userService.resetUserFailCount(email);
 
     const accessToken = await this.tokenService.signAccessToken(email);
     const refreshToken = await this.tokenService.signRefreshToken(email);
 
+    // 현재 로그인한 사용자의 refresh Token을 DB에 저장
     await this.tokenService.createRefreshToken({
       email: email,
       refreshToken: refreshToken,
