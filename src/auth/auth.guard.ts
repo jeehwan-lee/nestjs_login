@@ -16,7 +16,6 @@ export class adminCheckGuard implements CanActivate {
 
   async canActivate(context: any): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-
     const existedUser = await this.userService.getUser(request.body.email);
 
     if (!existedUser) {
@@ -26,7 +25,7 @@ export class adminCheckGuard implements CanActivate {
       );
     }
 
-    if (request.body.role !== 'ADMIN') {
+    if (existedUser.role !== 'ADMIN') {
       throw new HttpException(
         '회원목록은 관리자만 조회할 수 있습니다.',
         HttpStatus.BAD_REQUEST,
