@@ -43,8 +43,8 @@ export class TokenService {
     return this.tokenRepository.save(existedRefreshToken);
   }
 
-  async delelteRefreshToken(email: string) {
-    await this.tokenRepository.softDelete({ email: email });
+  async delelteRefreshToken(refreshToken: string) {
+    await this.tokenRepository.softDelete({ refreshToken: refreshToken });
   }
 
   signAccessToken(userEmail: string): string {
@@ -70,10 +70,14 @@ export class TokenService {
     }
   }
 
-  verifyRefreshToken(token: string) {
+  async verifyRefreshToken(token: string) {
     try {
       return jwt.verify(token, process.env.REFRESH_TOKEN_SCRET);
     } catch {
+      // 유효하지 않거나 혹은 유효기간이 지난 refreshToken일 경우
+      // DB에서 삭제
+      await this.delelteRefreshToken(token);
+
       throw new HttpException(
         '유효한 토큰이 아닙니다.',
         HttpStatus.BAD_REQUEST,

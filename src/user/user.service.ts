@@ -69,7 +69,7 @@ export class UserService {
       return null;
     }
 
-    user.status = 'inactive';
+    user.status = 'INACTIVE';
     user.updatedDate = new Date();
     this.userRepository.save(user);
   }
@@ -81,7 +81,7 @@ export class UserService {
       return null;
     }
 
-    user.status = 'active';
+    user.status = 'ACTIVE';
     user.updatedDate = new Date();
     this.userRepository.save(user);
   }

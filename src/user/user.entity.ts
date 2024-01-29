@@ -15,13 +15,13 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ default: 'active' })
+  @Column({ default: 'ACTIVE' })
   status: string;
 
   @Column({ default: 0 })
   failCount: number;
 
-  @Column({ default: 'normal' })
+  @Column({ default: 'MEMBER' })
   role: string;
 
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })

@@ -101,6 +101,14 @@ export class AuthService {
       // User의 fail Count 데이터 증가
       const failCount = await this.userService.increaseUserFailCount(email);
 
+      // 계정이 존재하지 않을 경우
+      if (!failCount) {
+        throw new HttpException(
+          '가입되지 않은 이메일입니다.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
       // fail Count > 5 이면 계정 잠금
       if (failCount > 5) {
         await this.userService.inActivateUserAccount(email);
@@ -118,7 +126,7 @@ export class AuthService {
     }
 
     // 계정이 잠겼는지 확인
-    if (validatedUser.status == 'inactive') {
+    if (validatedUser.status == 'INACTIVE') {
       throw new HttpException('계정이 잠겨있습니다.', HttpStatus.BAD_REQUEST);
     }
 
@@ -167,7 +175,9 @@ export class AuthService {
       );
     }
 
-    await this.tokenService.delelteRefreshToken(email);
+    await this.tokenService.delelteRefreshToken(
+      userExistedRefreshToken.refreshToken,
+    );
   }
 
   async createAccessToken(email: string, refreshToken: string) {
