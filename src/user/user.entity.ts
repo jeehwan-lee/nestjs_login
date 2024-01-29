@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -6,10 +7,20 @@ export class User {
   @PrimaryGeneratedColumn()
   id?: number;
 
+  @ApiProperty({
+    example: 'Jeehwan@naver.com',
+    description: '사용자 이메일',
+    required: true,
+  })
   @IsEmail()
   @Column({ unique: true })
   email: string;
 
+  @ApiProperty({
+    example: '123456',
+    description: '사용자 비밀번호',
+    required: true,
+  })
   @IsString()
   @IsNotEmpty()
   @Column()
