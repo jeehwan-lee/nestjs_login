@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsIn, IsNotEmpty, IsString } from 'class-validator';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -38,8 +38,9 @@ export class User {
     description: '계정 권한',
     required: false,
   })
+  @IsIn(['ADMIN', 'MEMBER'])
   @Column({ default: 'MEMBER' })
-  role: string;
+  role: string = 'MEMBER';
 
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   createDate: Date = new Date();
