@@ -1,6 +1,11 @@
 import { Body, Controller, Get, Post, Query, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { User } from 'src/user/user.entity';
+import {
+  User,
+  UserEmail,
+  UserEmailAndToken,
+  UserInfo,
+} from 'src/user/user.entity';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('API 목록')
@@ -22,8 +27,8 @@ export class AuthController {
     description: '이메일과 비밀번호를 입력받아 로그인합니다.',
   })
   @Post('login')
-  async login(@Request() req) {
-    return await this.authService.login(req.body.email, req.body.password);
+  async login(@Body() userInfo: UserInfo) {
+    return await this.authService.login(userInfo.email, userInfo.password);
   }
 
   @ApiOperation({
@@ -31,8 +36,8 @@ export class AuthController {
     description: '이메일 통해 로그아웃을 합니다.',
   })
   @Post('logout')
-  async logout(@Request() req) {
-    return await this.authService.logout(req.body.email);
+  async logout(@Body() userEmail: UserEmail) {
+    return await this.authService.logout(userEmail.email);
   }
 
   @ApiOperation({
@@ -40,10 +45,10 @@ export class AuthController {
     description: '이메일과 새로운 비밀번호를 입력받아 비밀번호를 변경합니다.',
   })
   @Post('changePw')
-  async changePassword(@Request() req) {
+  async changePassword(@Body() userInfo: UserInfo) {
     return await this.authService.changePassword(
-      req.body.email,
-      req.body.password,
+      userInfo.email,
+      userInfo.password,
     );
   }
 
@@ -63,22 +68,22 @@ export class AuthController {
     description: 'Refresh 토큰을 통해 Access 토큰을 재발급합니다.',
   })
   @Post('token')
-  async createAccessToken(@Request() req) {
+  async createAccessToken(@Body() userEmailAndToken: UserEmailAndToken) {
     return await this.authService.createAccessToken(
-      req.body.email,
-      req.body.refreshToken,
+      userEmailAndToken.email,
+      userEmailAndToken.refreshToken,
     );
   }
 
   @ApiOperation({
     summary: '잠긴 계정 해제 API',
-    description: '로그인 5회 실패 후 잠긴 계정을 해제합니다.',
+    description: '로그인을 5회 실패해서 잠긴 계정을 해제합니다.',
   })
   @Post('unLockUser')
-  async unlockUser(@Request() req) {
+  async unlockUser(@Body() userInfo: UserInfo) {
     return await this.authService.unLockUserAccount(
-      req.body.email,
-      req.body.password,
+      userInfo.email,
+      userInfo.password,
     );
   }
 }

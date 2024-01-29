@@ -32,6 +32,12 @@ export class User {
   @Column({ default: 0 })
   failCount: number;
 
+  @ApiProperty({
+    example: 'MEMBER | ADMIN',
+    default: 'MEMBER',
+    description: '계정 권한',
+    required: false,
+  })
   @Column({ default: 'MEMBER' })
   role: string;
 
@@ -40,4 +46,53 @@ export class User {
 
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   updatedDate: Date = new Date();
+}
+
+export class UserInfo {
+  @ApiProperty({
+    example: 'Jeehwan@naver.com',
+    description: '사용자 이메일',
+    required: true,
+  })
+  @IsEmail()
+  email: string;
+
+  @ApiProperty({
+    example: '123456',
+    description: '사용자 비밀번호',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  password: string;
+}
+
+export class UserEmail {
+  @ApiProperty({
+    example: 'Jeehwan@naver.com',
+    description: '사용자 이메일',
+    required: true,
+  })
+  @IsEmail()
+  email: string;
+}
+
+export class UserEmailAndToken {
+  @ApiProperty({
+    example: 'Jeehwan@naver.com',
+    description: '사용자 이메일',
+    required: true,
+  })
+  @IsEmail()
+  email: string;
+
+  @ApiProperty({
+    example:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluQGFkbWluLmNvbSIsImlhdCI6MTcwNjUzNzY4MCwiZXhwIjoxNzA2NjI0MDgwfQ.EoswLiBiiibw82SXzrpoPyt9DRO5zBMV8ZGK1xjspYk',
+    description: '로그인한 사용자의 Refresh 토큰',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  refreshToken: string;
 }
