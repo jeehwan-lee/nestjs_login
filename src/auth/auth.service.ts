@@ -103,7 +103,7 @@ export class AuthService {
 
       // fail Count > 5 이면 계정 잠금
       if (failCount > 5) {
-        await this.userService.inActiveUser(email);
+        await this.userService.inActivateUserAccount(email);
 
         throw new HttpException(
           '로그인 시도 횟수 5회 초과로 계정이 잠겼습니다.',
@@ -192,5 +192,23 @@ export class AuthService {
     await this.tokenService.updateRefreshToken(email, newRefreshToken);
 
     return { accessToken: newAccessToken, refreshToken: refreshToken };
+  }
+
+  async unLockUserAccount(email: string, password: string) {
+    const validatedUser = await this.userService.validateUser(email, password);
+
+    if (!validatedUser) {
+      // 비밀번호 검증에 실패했을 경우
+      throw new HttpException(
+        '이메일과 비밀번호를 확인하세요.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // User DB의 status 컬럼의 값을 active로 수정
+    await this.userService.activateUserAccount(email);
+
+    // User의 fail Acount 0으로 초기화
+    await this.userService.resetUserFailCount(email);
   }
 }

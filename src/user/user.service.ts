@@ -10,16 +10,16 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async getAllUser() {
-    const result = await this.userRepository.find();
-    return result;
-  }
-
   async getUser(email: string) {
     const result = await this.userRepository.findOne({
       where: { email },
     });
 
+    return result;
+  }
+
+  async getAllUser() {
+    const result = await this.userRepository.find();
     return result;
   }
 
@@ -62,7 +62,7 @@ export class UserService {
     return user.failCount;
   }
 
-  async inActiveUser(email: string) {
+  async inActivateUserAccount(email: string) {
     const user = await this.getUser(email);
 
     if (!user) {
@@ -70,6 +70,18 @@ export class UserService {
     }
 
     user.status = 'inactive';
+    user.updatedDate = new Date();
+    this.userRepository.save(user);
+  }
+
+  async activateUserAccount(email: string) {
+    const user = await this.getUser(email);
+
+    if (!user) {
+      return null;
+    }
+
+    user.status = 'active';
     user.updatedDate = new Date();
     this.userRepository.save(user);
   }

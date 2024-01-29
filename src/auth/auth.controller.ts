@@ -42,4 +42,12 @@ export class AuthController {
       req.body.refreshToken,
     );
   }
+
+  @Post('unLockUser')
+  async unlockUser(@Request() req) {
+    return await this.authService.unLockUserAccount(
+      req.body.email,
+      req.body.password,
+    );
+  }
 }
