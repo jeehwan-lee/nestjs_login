@@ -11,22 +11,7 @@ export class AuthService {
     private tokenService: TokenService,
   ) {}
 
-  async findAllUser(email: string) {
-    if (!email) {
-      throw new HttpException(
-        '회원목록은 관리자만 조회할 수 있습니다.',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const validatedUser = await this.userService.getUser(email);
-
-    if (!validatedUser || validatedUser.role == 'normal') {
-      throw new HttpException(
-        '회원목록은 관리자만 조회할 수 있습니다.',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
+  async findAllUser() {
     const existedAllUser = await this.userService.getAllUser();
     return existedAllUser;
   }
