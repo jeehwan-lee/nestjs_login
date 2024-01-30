@@ -62,17 +62,6 @@ export class AuthController {
   }
 
   @ApiOperation({
-    summary: '회원목록 조회 API',
-    description:
-      '회원목록 조회 API로 관리자 권한을 갖는 계정만 조회할 수 있습니다.',
-  })
-  @UseGuards(adminCheckGuard)
-  @Get('user')
-  async findAllUser() {
-    return await this.authService.findAllUser();
-  }
-
-  @ApiOperation({
     summary: '토큰 재발급 API',
     description: 'Refresh 토큰을 통해 Access 토큰을 재발급합니다.',
   })
@@ -94,5 +83,16 @@ export class AuthController {
       userInfo.email,
       userInfo.password,
     );
+  }
+
+  @ApiOperation({
+    summary: '회원목록 조회 API',
+    description:
+      '회원목록 조회 API로 관리자 권한을 갖는 계정만 조회할 수 있습니다.',
+  })
+  @UseGuards(adminCheckGuard)
+  @Get('user')
+  async findAllUser() {
+    return await this.authService.findAllUser();
   }
 }
