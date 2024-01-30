@@ -1,9 +1,8 @@
 # NestJS를 활용한 사용자 인증과 권한 관리시스템 구현
 
-이 프로젝트는 NestJS를 활용해 사용자의 회원가입, 로그인, 비밀번호 변경을 처리하는 API를 구현하고 
+이 프로젝트는 NestJS를 활용해 사용자의 회원가입, 로그인, 비밀번호 변경을 처리하는 API를 구현하고
 
 JWT를 사용한 토큰 기반의 인증 시스템을 구축합니다.
-
 
 ## 목차
 
@@ -13,14 +12,12 @@ JWT를 사용한 토큰 기반의 인증 시스템을 구축합니다.
 
 - [구조 및 설계](#구조-및-설계)
 
-   - [프로젝트 구조](#1-프로젝트-구조)
- 
-   - [DB 설계](#2-DB-설계)
+  - [프로젝트 구조](#1-프로젝트-구조)
+  - [DB 설계](#2-DB-설계)
 
 - [코드 설명](#코드-설명)
 
 - [회고](#회고)
-
 
 ## 설치 및 실행방법
 
@@ -37,13 +34,13 @@ npm run start
 ```
 
 3. 서버 접속 주소
-   
+
 ```
 http://localhost:3000
 ```
 
 4. Swagger API를 통한 실행
-   
+
    아래 Swagger API URL을 통해 API 예시를 확인하고 실행할 수 있습니다.
 
    다만, 관리자 권한 인증이 필요한 '회원목록 조회 API'의 경우 별도의 방법(Postman 사용)이 필요합니다.
@@ -58,24 +55,20 @@ http://localhost:3000/api
 
    - 일반 사용자 : jeehwan@naver.com / 123456
 
-
 ## 구현 내용
 
 1. 회원가입 API
 
 2. 로그인 API
-  
+
 3. 비밀번호 변경 API
-  
+
 4. 회원 목록 조회 API
-  
+
 5. Refresh 토큰을 사용한 토큰 재발급 기능
-     
 6. 로그인 시도 제한 기능(최대 5회)
-     
 7. 중복 로그인 방지 기능
 
-     
 ## 구조 및 설계
 
 ### 1. 프로젝트 구조
@@ -107,32 +100,31 @@ auth, token, user 총 3개의 모듈로 이루어져있으며
 
 auth.controller.ts에서 API를 생성하고 auth.guard.ts를 통해 인증을 확인합니다.
 
-
 ### 2. DB 설계
 
 - USER 테이블
 
-|   칼럼명    |    타 입     | Null |     Key     |  Default |  설 명  |
-| :---------: | :----------: | :--: | :---------: | :------: | :------: |
-|     id      |     int      |  No  | Primary Key |     -    |    id    |
-|    email    |    varchar   |  No  |      -      |     -    |  이메일  |
-|   password  |    varchar   |  No  |      -      |     -    | 비밀번호 |
-|   status    |    varchar   |  No  |      -      |  ACTIVE  | 잠금상태 |
-|  failCount  |    varchar   |  No  |      -      |     0    | 실패횟수 |
-|    role     |     int      |  No  |      -      |  MEMBER  |   권한   |
-| createDate  |   datetime   |  No  |      -      | 현재시간 | 생성일자 |
-| updatedDate |   datetime   |  No  |      -      | 현재시간 | 수정일자 |
+|   칼럼명    |  타 입   | Null |     Key     | Default  |  설 명   |
+| :---------: | :------: | :--: | :---------: | :------: | :------: |
+|     id      |   int    |  No  | Primary Key |    -     |    id    |
+|    email    | varchar  |  No  |      -      |    -     |  이메일  |
+|  password   | varchar  |  No  |      -      |    -     | 비밀번호 |
+|   status    | varchar  |  No  |      -      |  ACTIVE  | 잠금상태 |
+|  failCount  | varchar  |  No  |      -      |    0     | 실패횟수 |
+|    role     |   int    |  No  |      -      |  MEMBER  |   권한   |
+| createDate  | datetime |  No  |      -      | 현재시간 | 생성일자 |
+| updatedDate | datetime |  No  |      -      | 현재시간 | 수정일자 |
 
 - TOKEN 테이블
 
-|   칼럼명    |    타 입     | Null |     Key     |  Default |  설 명   |
-| :---------: | :----------: | :--: | :---------: | :------: | :------: |
-|     id      |     int      |  No  | Primary Key |     -    |    id    |
-|    email    |     int      |  No  |      -      |     -    |  이메일  |
-| refreshToken|    varchar   |  No  |      -      |     -    |Refrsh토큰|
-| createDate  |   datetime   |  No  |      -      | 현재시간 | 생성일자 |
-| updatedDate |   datetime   |  No  |      -      | 현재시간 | 수정일자 |
-| delatedDate |   datetime   |  No  |      -      | 현재시간 | 삭제일자 |
+|    칼럼명    |  타 입   | Null |     Key     | Default  |   설 명    |
+| :----------: | :------: | :--: | :---------: | :------: | :--------: |
+|      id      |   int    |  No  | Primary Key |    -     |     id     |
+|    email     |   int    |  No  |      -      |    -     |   이메일   |
+| refreshToken | varchar  |  No  |      -      |    -     | Refrsh토큰 |
+|  createDate  | datetime |  No  |      -      | 현재시간 |  생성일자  |
+| updatedDate  | datetime |  No  |      -      | 현재시간 |  수정일자  |
+| delatedDate  | datetime |  No  |      -      |    -     |  삭제일자  |
 
 데이터베이스 구조는 USER와 TOKEN 테이블 두개로 구성되어 있습니다.
 
@@ -144,8 +136,7 @@ auth.controller.ts에서 API를 생성하고 auth.guard.ts를 통해 인증을 �
 
    USER 테이블과는 달리 delatedDate 컬럼을 추가했는데 이는 토큰이 만료되거나 사용자가 로그아웃한 경우,
 
-   로그인과 로그아웃 내역을 확인할 수 있도록 데이터를 삭제하지 않고 Typeorm의 Soft Delate를 사용했습니다. 
-
+   로그인과 로그아웃 내역을 확인할 수 있도록 데이터를 삭제하지 않고 Typeorm의 Soft Delate를 사용했습니다.
 
 ## 코드 설명
 
@@ -199,7 +190,7 @@ export class AuthController {
      }
    }
    ```
-  
+
    authService.register에서는 userService의 getUser를 통해 email을 입력받아 중복된 이메일이 존재하는지 확인하고
 
    중복된 이메일이 없을 경우 password를 암호화해서 userService의 createUser를 통해 사용자 정보를 DB에 저장합니다.
@@ -235,14 +226,14 @@ export class AuthController {
           HttpStatus.BAD_REQUEST,
         );
       }
-   
+
    ...
-   
+
    }
    ```
 
    위와 같이 비밀번호 검증에 실패한 경우 이메일이 존재하는지 먼저 확인합니다.
-   
+
    2.2 (비밀번호 검증에 실패한 경우) failCount 증가
 
    ```
@@ -253,7 +244,7 @@ export class AuthController {
       // 비밀번호 검증에 실패했을 경우
 
       ...
-   
+
       // User의 fail Count 데이터 증가
       const failCount = await this.userService.increaseUserFailCount(email);
 
@@ -262,7 +253,7 @@ export class AuthController {
    ```
 
    이메일이 존재할 경우 해당 이메일의 failCount를 증가시킵니다.
-   
+
    2.3 로그인 실패를 5번 이상 했을 경우 계정 잠금
 
    ```
@@ -283,14 +274,14 @@ export class AuthController {
           HttpStatus.BAD_REQUEST,
         );
       }
-   
+
       ...
-   
+
    }
    ```
 
    만약 해당 이메일의 failCount가 5 이상이 경우, 해당 계정의 status 값을 'INACTIVE'로 변경해서 계정을 잠금상태로 변경하게 됩니다.
-   
+
    2.4 (비밀번호 검증 성공 시) 계정이 잠겼는지 확인
 
    ```
@@ -315,7 +306,7 @@ export class AuthController {
    ```
 
    로그인 실패했을 경우 로그인 실패 횟수를 보여주며, 비밀번호 검증을 성공했을 경우 해당 계정이 잠겼는지 확인합니다.
-   
+
    2.5 (비밀번호 검증 성공 시) 중복로그인 확인
 
    ```
@@ -351,21 +342,21 @@ export class AuthController {
    ...
     // User의 fail Acount 0으로 초기화
     await this.userService.resetUserFailCount(email);
-   
+
    ...
 
    }
    ```
 
    중복로그인 검증까지 마친 후 로그인을 하기 위해 계정의 failCount를 0으로 초기화합니다.
-   
+
    2.7 로그인한 사용자의 refresh 토큰을 DB에 저장 후 토큰 반환
 
    ```
    async login(email: string, password: string) {
 
    ...
-   
+
     const accessToken = await this.tokenService.signAccessToken(email);
     const refreshToken = await this.tokenService.signRefreshToken(email);
 
@@ -382,14 +373,14 @@ export class AuthController {
       accessToken: accessToken,
       refreshToken: refreshToken,
     };
-   
+
    ...
 
    }
    ```
 
    마지막으로 로그인한 사용자의 refresh 토큰을 DB에 저장하며, access 토큰과 refresh 토큰을 반환합니다.
-  
+
 3. 비밀번호 변경 API
 
    ```
@@ -401,6 +392,7 @@ export class AuthController {
      );
    }
    ```
+
    비밀번호 변경 API는 /auth/changePw 이며, email과 password를 입력받습니다.
 
    비밀번호 변경 로직은 다음과 같은 절차로 진행됩니다.
@@ -412,16 +404,16 @@ export class AuthController {
        // TOKEN 인증을 통해 현재 접속한 사용자인지 검증
        const userExistedRefreshToken =
          await this.tokenService.getRefreshTokenByEmail(email);
-   
+
        if (!userExistedRefreshToken) {
          throw new HttpException('로그인이 필요합니다.', HttpStatus.BAD_REQUEST);
        }
-   
+
        // 유효한 토큰인지 검증
        await this.tokenService.verifyRefreshToken(
          userExistedRefreshToken.refreshToken,
        );
-   
+
        ...
    }
    ```
@@ -434,16 +426,16 @@ export class AuthController {
    async changePassword(email: string, password: string) {
 
       ...
-   
+
        const existedUser = await this.userService.getUser(email);
-   
+
        if (!existedUser) {
          throw new HttpException(
            '이메일이 존재하지 않습니다.',
            HttpStatus.BAD_REQUEST,
          );
        }
-   
+
        ...
    }
    ```
@@ -454,9 +446,9 @@ export class AuthController {
    async changePassword(email: string, password: string) {
 
    ...
-   
+
        const encryptedPassword = bcrypt.hashSync(password, 10);
-   
+
        try {
          const newUser = await this.userService.updateUserPassword(
            existedUser,
@@ -492,18 +484,18 @@ export class AuthController {
         private authService: AuthService,
         private userService: UserService,
       ) {}
-   
+
       async canActivate(context: any): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
         const existedUser = await this.userService.getUser(request.body.email);
-   
+
         if (!existedUser) {
           throw new HttpException(
             '정상적인 접근이 아닙니다.',
             HttpStatus.BAD_REQUEST,
           );
         }
-   
+
         if (existedUser.role !== 'ADMIN') {
           throw new HttpException(
             '회원목록은 관리자만 조회할 수 있습니다.',
@@ -519,7 +511,7 @@ export class AuthController {
    userSerivce.getUser를 통해 가입된 사용자인지 확인하고, 해당 계정의 role을 확인합니다.
 
    해당 계정이 ADMIN 권한을 갖고 있다면 authService.findAllUser를 실행합니다.
-  
+
 5. Refresh 토큰을 사용한 토큰 재발급 기능
 
    ```
@@ -542,19 +534,19 @@ export class AuthController {
    async createAccessToken(email: string, refreshToken: string) {
        const existedToken =
          await this.tokenService.getRefreshTokenByToken(refreshToken);
-   
+
        if (!existedToken) {
          throw new HttpException(
            '유효한 토큰이 아닙니다.',
            HttpStatus.BAD_REQUEST,
          );
        }
-   
+
        // 유효한 토큰인지 검증
        await this.tokenService.verifyRefreshToken(refreshToken);
-   
+
       ...
-   
+
    }
    ```
 
@@ -589,13 +581,13 @@ export class AuthController {
    async createAccessToken(email: string, refreshToken: string) {
 
       ...
-   
+
        // refreshToken 유효기간 갱신
        const newAccessToken = this.tokenService.signAccessToken(email);
        const newRefreshToken = this.tokenService.signRefreshToken(email);
-   
+
        ...
-   
+
    }
    ```
 
@@ -609,16 +601,15 @@ export class AuthController {
    async createAccessToken(email: string, refreshToken: string) {
 
        ...
-   
+
        // 현재 로그인한 사용자의 refresh Token을 DB에 저장
        await this.tokenService.updateRefreshToken(email, newRefreshToken);
-   
+
        return { accessToken: newAccessToken, refreshToken: refreshToken };
    }
    ```
 
    유효기간이 연장된 refresh 토큰을 TOKEN 테이블에 저장해서 현재 계정의 로그인상태를 유지합니다.
-
 
    ## 회고
 
@@ -647,6 +638,3 @@ export class AuthController {
    이 프로젝트에서 구현하지 못한 선택적 도전과제의 회원가입 시 이메일 인증 기능도 구현해보려고 합니다.
 
    감사합니다.
-   
-
-   
