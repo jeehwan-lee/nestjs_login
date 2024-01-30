@@ -143,7 +143,6 @@ export class AuthService {
       deletedDate: undefined,
     });
 
-    // TODO : 반환값 수정
     return {
       accessToken: accessToken,
       refreshToken: refreshToken,
