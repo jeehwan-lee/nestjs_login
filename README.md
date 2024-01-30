@@ -53,7 +53,7 @@ http://localhost:3000
 
 4. Swagger API를 통한 실행
    
-   아래 URL을 통해 Swagger API를 통해 API 예시를 확인하고 실행할 수 있습니다.
+   아래 Swagger API URL을 통해 API 예시를 확인하고 실행할 수 있습니다.
 
    다만, 관리자 권한 인증이 필요한 '회원목록 조회 API'의 경우 별도의 방법(Postman 사용)이 필요합니다.
 
@@ -124,27 +124,67 @@ http://localhost:3000/api
 ### 1. 프로젝트 구조
 
 ```bash
-├── app.js
-├── config
-│   ├── db.js
-│   └── handlebars_helpers.js
-├── controllers
-│   ├── post_controller.js
-│   └── refly_controller.js
-├── routes
-│   ├── post.js
-│   └── refly.js
-├── services
-│   ├── post_service.js
-│   └── refly_service.js
-├── views
-│   ├── layouts
-│       └── main.handlebars
-│   ├── detail.handlebars
-│   ├── home.handlebars
-│   ├── modify.handlebars
-│   └── write.handlebars
-└── public
+├── app.controller.spec.ts
+├── app.controller.ts
+├── app.module.ts
+├── app.service.ts
+├── main.ts
+├── auth
+│   ├── auth.controller.ts
+│   ├── auth.guard.ts
+│   ├── auth.module.ts
+│   └── auth.service.ts
+├── token
+│   ├── token.entity.ts
+│   ├── token.module.ts
+│   └── token.service.ts
+├── user
+│   ├── user.entity.ts
+│   ├── user.module.ts
+└── └── user.service.ts
 ```
 
+프로젝트의 src 파일은 위와 같은 구조로 이루어져있습니다.
+
+auth, token, user 총 3개의 모듈로 이루어져있으며
+
+auth.controller.ts 에서 API를 생성하고 auth.guard.ts 를 통해 인증을 확인합니다.
+
+
 ### 2. DB 설계
+
+- USER 테이블
+
+|   칼럼명    |    타 입     | Null |     Key     |  Default |  설 명  |
+| :---------: | :----------: | :--: | :---------: | :------: | :------: |
+|     id      |     int      |  No  | Primary Key |     -    |    id    |
+|    email    |    varchar   |  No  |      -      |     -    |  이메일  |
+|   password  |    varchar   |  No  |      -      |     -    | 비밀번호 |
+|   status    |    varchar   |  No  |      -      |  ACTIVE  | 잠금상태 |
+|  failCount  |    varchar   |  No  |      -      |     0    | 실패횟수 |
+|    role     |     int      |  No  |      -      |  MEMBER  |   권한   |
+| createDate  |   datetime   |  No  |      -      | 현재시간 | 생성일자 |
+| updatedDate |   datetime   |  No  |      -      | 현재시간 | 수정일자 |
+
+- TOKEN 테이블
+
+|   칼럼명    |    타 입     | Null |     Key     |  Default |  설 명   |
+| :---------: | :----------: | :--: | :---------: | :------: | :------: |
+|     id      |     int      |  No  | Primary Key |     -    |    id    |
+|    email    |     int      |  No  |      -      |     -    |  이메일  |
+| refreshToken|    varchar   |  No  |      -      |     -    |Refrsh토큰|
+| createDate  |   datetime   |  No  |      -      | 현재시간 | 생성일자 |
+| updatedDate |   datetime   |  No  |      -      | 현재시간 | 수정일자 |
+| delatedDate |   datetime   |  No  |      -      | 현재시간 | 삭제일자 |
+
+데이터베이스 구조는 USER와 TOKEN 테이블 두개로 구성되어 있습니다.
+
+1. USER 테이블에는 회원의 기본적인 정보인 email과 password, role이 있으며,
+
+   로그인 실패횟수를 저장하는 failCount와 5회 이상 실패 시 계정을 잠그는 status 컬럼이 있습니다.
+
+2. TOKEN 테이블은 현재 로그인한 사용자의 email과 refresh 토큰을 저장합니다.
+
+   USER 테이블과는 다르기 delatedDate 컬럼을 추가했는데 이는 토큰이 만료되거나 로그아웃한 경우,
+
+   추후 로그인 기록을 확인할때 사용할 수 있도록 데이터를 삭제하지 않고 Typeorm의 Soft Delate를 사용했습니다. 
