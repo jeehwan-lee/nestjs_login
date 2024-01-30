@@ -83,19 +83,21 @@ export class AuthService {
     if (!validatedUser) {
       // 비밀번호 검증에 실패했을 경우
 
-      // User의 fail Count 데이터 증가
-      const failCount = await this.userService.increaseUserFailCount(email);
+      const existedUser = await this.userService.getUser(email);
 
       // 계정이 존재하지 않을 경우
-      if (!failCount) {
+      if (!existedUser) {
         throw new HttpException(
           '가입되지 않은 이메일입니다.',
           HttpStatus.BAD_REQUEST,
         );
       }
 
-      // fail Count > 5 이면 계정 잠금
-      if (failCount > 5) {
+      // User의 fail Count 데이터 증가
+      const failCount = await this.userService.increaseUserFailCount(email);
+
+      // fail Count >= 5 이면 계정 잠금
+      if (failCount >= 5) {
         await this.userService.inActivateUserAccount(email);
 
         throw new HttpException(
@@ -183,7 +185,7 @@ export class AuthService {
     const newAccessToken = this.tokenService.signAccessToken(email);
     const newRefreshToken = this.tokenService.signRefreshToken(email);
 
-    // 현재 로그인한 사용자의 refresh Token을 DB에 저장
+    // 현재 로그인한 사용자의 새로 발급된 refresh Token으로 DB에 저장
     await this.tokenService.updateRefreshToken(email, newRefreshToken);
 
     return { accessToken: newAccessToken, refreshToken: refreshToken };
